@@ -1,10 +1,10 @@
 from databases import *
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, redirect
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return render_template('home.html', students=query_all())
+	return render_template('home.html', students=query_all())
 
 @app.route('/student/<int:student_id>')
 def display_student(student_id):
@@ -19,4 +19,10 @@ def add_student_route():
 			request.form['student_year'], False)
 		return render_template('add.html')
 
-app.run(debug=True)
+@app.route('/delete/<int:id>', methods = ['POST'])
+def delete(id):
+	student = query_by_id(id)
+	delete_student(student.name)	
+	return redirect(url_for("home"))
+
+app.run(debug=True, threaded=True)
